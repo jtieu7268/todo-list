@@ -18,7 +18,9 @@ export const taskManager = (function () {
     };
 
     const createTask = function (taskName = "", taskNotes = "", taskDueDate = null, taskIsCompleted = false, taskPriority = null, taskTags = []) {
-        masterTaskList.all.push(createTaskObj(taskName, taskNotes, taskDueDate, taskIsCompleted, taskPriority, taskTags));
+        const task = createTaskObj(taskName, taskNotes, taskDueDate, taskIsCompleted, taskPriority, taskTags);
+        masterTaskList.all.push(task);
+        return task.id;
     };
 
     const printTaskList = () => console.log(masterTaskList);

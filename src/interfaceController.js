@@ -31,7 +31,7 @@ export const interfaceController = (function () {
                 taskLI.appendChild(taskNameInput);
         
                 taskManager.printTaskList();
-                taskManager.createTask();
+                taskLI.id = taskManager.createTask();
                 taskManager.printTaskList();
                 
                 list.appendChild(taskLI);
