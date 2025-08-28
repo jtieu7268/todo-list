@@ -16,24 +16,47 @@ export const interfaceController = (function () {
                 const taskLI = document.createElement("li");
                 const taskIsCompleteInput = document.createElement("input");
                 const taskNameInput = document.createElement("input");
+                const taskNotesTextArea = document.createElement("textarea");
+                const taskPriorityLabel = document.createElement("label");
+                const taskPrioritySelect = document.createElement("select");
+                const taskTagsInput = document.createElement("input");
+                const taskDueDateInput = document.createElement("input");
         
                 taskIsCompleteInput.type = "checkbox";
                 taskNameInput.type = "text";
-        
-                taskNameInput.addEventListener('input', (event) => {
-        
-                });
-                taskIsCompleteInput.addEventListener('change', (event) => {
-        
-                });
-        
-                taskLI.appendChild(taskIsCompleteInput);
-                taskLI.appendChild(taskNameInput);
-        
+                taskTagsInput.type = "text";
+                taskDueDateInput.type = "datetime-local";
+
+                taskIsCompleteInput.name = "taskIsComplete";
+                taskNameInput.name = "taskName";
+                taskNotesTextArea.name = "taskNotes";
+                taskPrioritySelect.name = "taskPriority";
+                taskTagsInput.name = "taskTags";
+                taskDueDateInput.name = "taskDueDate";
+
+                taskNameInput.placeholder = "New Task Name";
+                taskNotesTextArea.placeholder = "Notes";
+                taskTagsInput.placeholder = "Tags";
+                taskPriorityLabel.textContent = "Priority: ";
+                for (let level of ["None", "High", "Medium", "Low"]) {
+                    const opt = document.createElement("option");
+                    opt.value = level;
+                    opt.textContent = level;
+                    taskPrioritySelect.appendChild(opt);
+                }
+                
                 taskManager.printTaskList();
                 taskLI.id = taskManager.createTask();
                 taskManager.printTaskList();
                 
+                taskLI.appendChild(taskIsCompleteInput);
+                taskLI.appendChild(taskNameInput);
+                taskLI.appendChild(taskNotesTextArea);
+                taskPriorityLabel.appendChild(taskPrioritySelect);
+                taskLI.appendChild(taskPriorityLabel);
+                taskLI.appendChild(taskTagsInput);
+                taskLI.appendChild(taskDueDateInput);
+
                 list.appendChild(taskLI);
             });
         
