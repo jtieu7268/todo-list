@@ -11,6 +11,12 @@ export const adaptor = (function () {
 
     const init = function () {
         const [addNewTaskButton, addNewTaskDialog, addNewTaskForm] = taskDOMRenderer.initAddNewTask();
+
+        addNewTaskButton.addEventListener("click", () => {
+            addNewTaskDialog.returnValue = "";
+            tasklist.appendChild(addNewTaskDialog);
+            addNewTaskDialog.show();
+        });
         
         addNewTaskDialog.addEventListener("close", (event) => {
             if (addNewTaskDialog.returnValue !== "cancel") {
@@ -40,18 +46,22 @@ export const adaptor = (function () {
                             || parsedInputs.tags !== ""))
                 ) parsedInputs.name = "New Task";
 
-                // if task name is empty otherwise, continue to default action without making new task
+                // if task name is not empty, make new task
+                if (parsedInputs.name !== "") {
+                    createTaskFromAddNewTaskFormInputs(parsedInputs);
+                    for (let inputField of inputFields) inputField.value = "";
+                }
+                
+                // otherwise, don't make new task and continue to default action 
                 tagsOutputList.innerHTML = "";
-                if (parsedInputs.name === "") return;
-
-                createTaskFromAddNewTaskFormInputs(parsedInputs);
-                for (let inputField of inputFields) inputField.value = "";
             }
+            tasklist.removeChild(addNewTaskDialog);
         })
 
         taskDiv.appendChild(addNewTaskButton);
+        // tasklist.appendChild(addNewTaskDialog);
         taskDiv.appendChild(tasklist);
-        taskDiv.appendChild(addNewTaskDialog);
+        // taskDiv.appendChild(addNewTaskDialog);
         
     }
 

@@ -11,10 +11,6 @@ export const taskDOMRenderer = (function () {
         addNewTaskForm.setAttribute("method", "dialog");
 
         addNewTaskButton.textContent = "+";
-        addNewTaskButton.addEventListener("click", () => {
-            addNewTaskDialog.returnValue = "";
-            addNewTaskDialog.show();
-        });
 
         const addNewTaskCancel = addNewTaskForm.querySelector("#add-new-task-cancel");
         addNewTaskCancel.addEventListener("click", () => {
