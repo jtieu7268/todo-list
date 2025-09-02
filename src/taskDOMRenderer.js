@@ -150,7 +150,7 @@ export const taskDOMRenderer = (function () {
         tagsOutput.setAttribute("for", "task-tags");
         
         const tagsOutputList = document.createElement("ul");
-        tagsInput.addEventListener("keypressed", event => {
+        tagsInput.addEventListener("keyup", event => {
             if (["Space", "Comma"].includes(event.code)) {
                 let tag = tagsInput.value.trim();
                 if (event.code === "Comma") {
