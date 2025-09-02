@@ -30,7 +30,6 @@ export const taskManager = (function () {
     const deleteTask = function (taskID) {
         const taskIndex = getTaskIndex(taskID);
         masterTaskList.all.splice(taskIndex, 1);
-        // TODO: check for or ensure valid task to delete, might punt this to form verification/adapter
     }
 
     const toggleTaskComplete = function (taskID) {

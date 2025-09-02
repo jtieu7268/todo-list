@@ -79,6 +79,11 @@ export const adaptor = (function () {
             priority, 
             tags
         );
+        const deleteButton = newTaskDiv.querySelector(".task-delete-button");
+        deleteButton.addEventListener("click", () => {
+            taskManager.deleteTask(taskID);
+            newTaskDiv.remove();
+        })
         tasklist.appendChild(newTaskDiv);
     };
 

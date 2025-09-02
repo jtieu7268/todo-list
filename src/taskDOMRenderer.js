@@ -242,12 +242,26 @@ export const taskDOMRenderer = (function () {
             newTaskTags.appendChild(tagLI);
         }
 
+        const buttonsDiv = document.createElement("div");
+
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("task-delete-button");
+        deleteButton.textContent = "Delete";
+
+        const editButton = document.createElement("button");
+        editButton.classList.add("task-edit-button");
+        editButton.textContent = "Edit";
+
+        buttonsDiv.appendChild(deleteButton);
+        buttonsDiv.appendChild(editButton);
+
         newTaskDiv.appendChild(newTaskCheckbox);
         newTaskDiv.appendChild(newTaskName);
         newTaskDiv.appendChild(newTaskNotes);
         newTaskDiv.appendChild(newTaskDueDate);
         newTaskDiv.appendChild(newTaskPriority);
         newTaskDiv.appendChild(newTaskTags);
+        newTaskDiv.appendChild(buttonsDiv);
 
         return newTaskDiv;
 
