@@ -1,5 +1,5 @@
-import { interfaceController  } from "./interfaceController.js";
+import { adaptor  } from "./adaptor.js";
 
 export default function () {
-    interfaceController.init();
+    adaptor.init();
 };
