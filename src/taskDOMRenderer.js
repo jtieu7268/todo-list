@@ -216,22 +216,34 @@ export const taskDOMRenderer = (function () {
         const newTaskDiv = document.createElement("div");
         newTaskDiv.setAttribute("id", id);
 
+        const newTaskCheckboxDiv = document.createElement("div");
+        newTaskCheckboxDiv.classList.add("task-checkbox");
+
         const newTaskCheckbox = document.createElement("input");
         newTaskCheckbox.setAttribute("type", "checkbox");
+        newTaskCheckbox.setAttribute("id", `${id}-checkbox`);
+
+        const newTaskNamePlusDiv = document.createElement("div");
+        newTaskNamePlusDiv.classList.add("task-display-info");
 
         const newTaskName = document.createElement("p");
+        newTaskName.setAttribute("id", `${id}-name`);
         newTaskName.textContent = name;
 
         const newTaskNotes = document.createElement("p");
+        newTaskNotes.setAttribute("id", `${id}-notes`);
         newTaskNotes.textContent = notes;
 
         const newTaskDueDate = document.createElement("p");
+        newTaskDueDate.setAttribute("id", `${id}-duedate`);
         newTaskDueDate.textContent = dueDate;
 
         const newTaskPriority = document.createElement("p");
+        newTaskPriority.setAttribute("id", `${id}-priority`);
         newTaskPriority.textContent = priority;
 
         const newTaskTags = document.createElement("ul");
+        newTaskTags.setAttribute("id", `${id}-tags`);
         for (let tag of tags) {
             const tagLI = document.createElement("li");
             tagLI.textContent = tag;
@@ -239,6 +251,7 @@ export const taskDOMRenderer = (function () {
         }
 
         const buttonsDiv = document.createElement("div");
+        buttonsDiv.classList.add("task-buttons");
 
         const deleteButton = document.createElement("button");
         deleteButton.classList.add("task-delete-button");
@@ -251,12 +264,15 @@ export const taskDOMRenderer = (function () {
         buttonsDiv.appendChild(deleteButton);
         buttonsDiv.appendChild(editButton);
 
-        newTaskDiv.appendChild(newTaskCheckbox);
-        newTaskDiv.appendChild(newTaskName);
-        newTaskDiv.appendChild(newTaskNotes);
-        newTaskDiv.appendChild(newTaskDueDate);
-        newTaskDiv.appendChild(newTaskPriority);
-        newTaskDiv.appendChild(newTaskTags);
+        newTaskCheckboxDiv.appendChild(newTaskCheckbox);
+        newTaskNamePlusDiv.appendChild(newTaskName);
+        newTaskNamePlusDiv.appendChild(newTaskNotes);
+        newTaskNamePlusDiv.appendChild(newTaskDueDate);
+        newTaskNamePlusDiv.appendChild(newTaskPriority);
+        newTaskNamePlusDiv.appendChild(newTaskTags);
+
+        newTaskDiv.appendChild(newTaskCheckboxDiv);
+        newTaskDiv.appendChild(newTaskNamePlusDiv);
         newTaskDiv.appendChild(buttonsDiv);
 
         return newTaskDiv;
