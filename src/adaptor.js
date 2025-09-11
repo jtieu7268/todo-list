@@ -20,18 +20,9 @@ export const adaptor = (function () {
         
         addNewTaskDialog.addEventListener("close", (event) => {
             if (addNewTaskDialog.returnValue !== "cancel") {
-                const inputFields = Array.from(addNewTaskForm.querySelectorAll("section div .input-field"));
-                const tagsOutputList = addNewTaskForm.querySelector("section div output ul");
-                const tags = Array.from(tagsOutputList.querySelectorAll("li")).reduce((acc, li) => acc += li.textContent + " ", "");
-                const parsedInputs = inputFields.reduce(
-                        (taskObj, inputField) => {
-                            if (inputField.name === "tags") {
-                                taskObj[inputField.name] = tags + inputField.value;
-                            } else {
-                                taskObj[inputField.name] = inputField.value;
-                            }
-                            return taskObj;
-                        }, {});     
+                const inputFields = retrieveFormInputs(addNewTaskForm);
+                const tagsOutputList = retrieveFormTagsOutputList(addNewTaskForm);
+                const parsedInputs = parseFormInputs(inputFields, tagsOutputList);
                 /* special cases for empty task name
                  * if the submit button is clicked and the task name is empty or
                  * if the new task form is lightly dismissed and the task name is empty but another field is filled out, 
@@ -43,7 +34,7 @@ export const adaptor = (function () {
                             parsedInputs.notes !== "" 
                             || parsedInputs.dueDate !== "" 
                             || parsedInputs.priority !== "" 
-                            || parsedInputs.tags !== ""))
+                            || parsedInputs.tags.length !== 0))
                 ) parsedInputs.name = "New Task";
 
                 // if task name is not empty, make new task
@@ -63,12 +54,11 @@ export const adaptor = (function () {
     }
 
     const createTaskFromAddNewTaskFormInputs = function (inputs) {
-        // process inputs here
         const name = inputs.name;
         const notes = inputs.notes;
         const dueDate = inputs.dueDate;
         const priority = inputs.priority;
-        const tags = inputs.tags !== "" ? inputs.tags.trim().split(" ") : [];
+        const tags = inputs.tags;
 
         // use processed inputs to create task and task element
         const taskID = taskManager.createTask(
@@ -86,23 +76,26 @@ export const adaptor = (function () {
             priority, 
             tags
         );
+
+        // imbue functionalities to delete and edit buttons of task element
         const deleteButton = newTaskDiv.querySelector(".task-delete-button");
         deleteButton.addEventListener("click", () => {
             taskManager.deleteTask(taskID);
             newTaskDiv.remove();
         });
+
         const editButton = newTaskDiv.querySelector(".task-edit-button");
         editButton.addEventListener("click", () => {
             // open form and populate current task info
             const editTaskForm = taskDOMRenderer.initEditTaskForm();
-            const inputFields = Array.from(editTaskForm.querySelectorAll("section div .input-field"));
+            const inputFields = retrieveFormInputs(editTaskForm);
+            const tagsOutputList = retrieveFormTagsOutputList(editTaskForm);
             for (let inputField of inputFields) {
                 if (inputField.name === "name") inputField.value = taskManager.getTaskName(taskID);
                 else if (inputField.name === "notes") inputField.value = taskManager.getTaskNotes(taskID);
                 else if (inputField.name === "dueDate") inputField.value = taskManager.getTaskDueDate(taskID);
                 else if (inputField.name === "priority") inputField.value = taskManager.getTaskPriority(taskID);
                 else if (inputField.name === "tags") {
-                    const tagsOutputList = editTaskForm.querySelector("section div output ul");
                     const taskTags = taskManager.getTaskTags(taskID);
                     for (let tag of taskTags) {
                         const tagLI = document.createElement("li");
@@ -111,42 +104,39 @@ export const adaptor = (function () {
                     }
                 };
             }
+
+            // imbue functionalities to cancel and submit buttons of edit form
             const newTaskDivInfoDiv = newTaskDiv.querySelector(".task-display-info");
+
             const editTaskCancelButton = editTaskForm.querySelector("#edit-task-cancel");
-            const editTaskSubmitButton = editTaskForm.querySelector("#edit-task-submit");
             editTaskCancelButton.addEventListener('click', event => {
                 event.preventDefault();
                 editTaskForm.replaceWith(newTaskDivInfoDiv);
             });
+
+            const editTaskSubmitButton = editTaskForm.querySelector("#edit-task-submit");
             editTaskSubmitButton.addEventListener('click', event => {
                 event.preventDefault();
-                const parsedInputs = inputFields.reduce(
-                        (taskObj, inputField) => {
-                            if (inputField.name === "tags") {
-                                taskObj[inputField.name] = taskManager.getTaskTags(taskID).reduce((acc, tag) => acc += tag + " ", "") + inputField.value;
-                            } else {
-                                taskObj[inputField.name] = inputField.value;
-                            }
-                            return taskObj;
-                        }, {});
+                const parsedInputs = parseFormInputs(inputFields, tagsOutputList);
                 if (parsedInputs.name === "") parsedInputs.name = "New Task";
                 // when submitted, exited, etc., update task in backend and display edits
                 editTaskFromEditTaskFormInputs(taskID, newTaskDivInfoDiv, parsedInputs);
                 editTaskForm.replaceWith(newTaskDivInfoDiv);
-            })
+            });
+
             newTaskDivInfoDiv.replaceWith(editTaskForm);
         });
+
         tasklist.appendChild(newTaskDiv);
     };
 
-    const editTaskFromEditTaskFormInputs = function (taskID, taskDivInfoDiv, inputs) {
-        console.log(inputs);
-        // process inputs here
+    const editTaskFromEditTaskFormInputs = function (taskID, taskInfoDiv, inputs) {
         const name = inputs.name;
         const notes = inputs.notes;
         const dueDate = inputs.dueDate;
         const priority = inputs.priority;
-        const tags = inputs.tags !== "" ? inputs.tags.trim().split(" ") : [];
+        const tags = inputs.tags;
+
         taskManager.editTask(
             taskID, 
             name, 
@@ -156,8 +146,8 @@ export const adaptor = (function () {
             tags
         );
 
-        taskDOMRenderer.renderEditedTask(
-            taskDivInfoDiv, 
+        taskDOMRenderer.renderEditedTaskInfoDiv(
+            taskInfoDiv, 
             taskID, 
             name, 
             notes, 
@@ -165,8 +155,26 @@ export const adaptor = (function () {
             priority, 
             tags
         );
-
     };
+
+    const retrieveFormInputs = form => { return Array.from(form.querySelectorAll("section div .input-field")) }
+
+    const retrieveFormTagsOutputList = form => { return form.querySelector("section div output ul") }
+
+    const parseFormInputs = function (inputFields, tagsOutputList) {
+        const tags = Array.from(tagsOutputList.querySelectorAll("li")).map(li => li.textContent).filter(tag => tag !== "");
+        const parsedInputs = inputFields.reduce(
+            (taskObj, inputField) => {
+                if (inputField.name === "tags") {
+                    if (inputField.value !== "") tags.push(inputField.value);
+                    taskObj[inputField.name] = tags;
+                } else {
+                    taskObj[inputField.name] = inputField.value;
+                }
+                return taskObj;
+            }, {});
+        return parsedInputs;
+    }
 
     return { init };
 

@@ -431,8 +431,7 @@ export const taskDOMRenderer = (function () {
         return form;
     };
 
-    const renderEditedTask = function (taskDivInfoDiv, id, name, notes, dueDate, priority, tags) {
-        console.log(taskDivInfoDiv);
+    const renderEditedTaskInfoDiv = function (taskDivInfoDiv, id, name, notes, dueDate, priority, tags) {
         taskDivInfoDiv.querySelector(`[id="${id}-name"]`).textContent = name;
         taskDivInfoDiv.querySelector(`[id="${id}-notes"]`).textContent = notes;
         taskDivInfoDiv.querySelector(`[id="${id}-duedate"]`).textContent = dueDate;
@@ -446,6 +445,6 @@ export const taskDOMRenderer = (function () {
         }
     };
 
-    return { initAddNewTask, renderNewTask, initEditTaskForm, renderEditedTask };
+    return { initAddNewTask, renderNewTask, initEditTaskForm, renderEditedTaskInfoDiv };
 
 })();
