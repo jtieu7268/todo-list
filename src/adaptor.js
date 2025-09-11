@@ -59,10 +59,7 @@ export const adaptor = (function () {
         })
 
         taskDiv.appendChild(addNewTaskButton);
-        // tasklist.appendChild(addNewTaskDialog);
         taskDiv.appendChild(tasklist);
-        // taskDiv.appendChild(addNewTaskDialog);
-        
     }
 
     const createTaskFromAddNewTaskFormInputs = function (inputs) {
@@ -93,8 +90,82 @@ export const adaptor = (function () {
         deleteButton.addEventListener("click", () => {
             taskManager.deleteTask(taskID);
             newTaskDiv.remove();
-        })
+        });
+        const editButton = newTaskDiv.querySelector(".task-edit-button");
+        editButton.addEventListener("click", () => {
+            // open form and populate current task info
+            const editTaskForm = taskDOMRenderer.initEditTaskForm();
+            const inputFields = Array.from(editTaskForm.querySelectorAll("section div .input-field"));
+            for (let inputField of inputFields) {
+                if (inputField.name === "name") inputField.value = taskManager.getTaskName(taskID);
+                else if (inputField.name === "notes") inputField.value = taskManager.getTaskNotes(taskID);
+                else if (inputField.name === "dueDate") inputField.value = taskManager.getTaskDueDate(taskID);
+                else if (inputField.name === "priority") inputField.value = taskManager.getTaskPriority(taskID);
+                else if (inputField.name === "tags") {
+                    const tagsOutputList = editTaskForm.querySelector("section div output ul");
+                    const taskTags = taskManager.getTaskTags(taskID);
+                    for (let tag of taskTags) {
+                        const tagLI = document.createElement("li");
+                        tagLI.textContent = tag;
+                        tagsOutputList.appendChild(tagLI);
+                    }
+                };
+            }
+            const newTaskDivInfoDiv = newTaskDiv.querySelector(".task-display-info");
+            const editTaskCancelButton = editTaskForm.querySelector("#edit-task-cancel");
+            const editTaskSubmitButton = editTaskForm.querySelector("#edit-task-submit");
+            editTaskCancelButton.addEventListener('click', event => {
+                event.preventDefault();
+                editTaskForm.replaceWith(newTaskDivInfoDiv);
+            });
+            editTaskSubmitButton.addEventListener('click', event => {
+                event.preventDefault();
+                const parsedInputs = inputFields.reduce(
+                        (taskObj, inputField) => {
+                            if (inputField.name === "tags") {
+                                taskObj[inputField.name] = taskManager.getTaskTags(taskID).reduce((acc, tag) => acc += tag + " ", "") + inputField.value;
+                            } else {
+                                taskObj[inputField.name] = inputField.value;
+                            }
+                            return taskObj;
+                        }, {});
+                if (parsedInputs.name === "") parsedInputs.name = "New Task";
+                // when submitted, exited, etc., update task in backend and display edits
+                editTaskFromEditTaskFormInputs(taskID, newTaskDivInfoDiv, parsedInputs);
+                editTaskForm.replaceWith(newTaskDivInfoDiv);
+            })
+            newTaskDivInfoDiv.replaceWith(editTaskForm);
+        });
         tasklist.appendChild(newTaskDiv);
+    };
+
+    const editTaskFromEditTaskFormInputs = function (taskID, taskDivInfoDiv, inputs) {
+        console.log(inputs);
+        // process inputs here
+        const name = inputs.name;
+        const notes = inputs.notes;
+        const dueDate = inputs.dueDate;
+        const priority = inputs.priority;
+        const tags = inputs.tags !== "" ? inputs.tags.trim().split(" ") : [];
+        taskManager.editTask(
+            taskID, 
+            name, 
+            notes, 
+            dueDate, 
+            priority, 
+            tags
+        );
+
+        taskDOMRenderer.renderEditedTask(
+            taskDivInfoDiv, 
+            taskID, 
+            name, 
+            notes, 
+            dueDate, 
+            priority, 
+            tags
+        );
+
     };
 
     return { init };

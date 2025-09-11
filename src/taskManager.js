@@ -39,6 +39,16 @@ export const taskManager = (function () {
         else removeTaskFromCompleted(taskID);
     }
 
+    const getTaskName = id => { return getTask(id).name }
+
+    const getTaskNotes = id => { return getTask(id).notes }
+
+    const getTaskDueDate = id => { return getTask(id).dueDate }
+
+    const getTaskPriority = id => { return getTask(id).priority }
+
+    const getTaskTags = id => { return getTask(id).tags }
+
     /* 
     const updateTask = function (taskID, fieldName, newData) {
         const task = getTask(taskID);
@@ -72,5 +82,5 @@ export const taskManager = (function () {
 
     const printTaskList = () => console.log(masterTaskList);
 
-    return { createTask, editTask, deleteTask, toggleTaskComplete, printTaskList };
+    return { createTask, editTask, deleteTask, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
 })();

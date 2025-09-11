@@ -15,7 +15,7 @@ export const taskDOMRenderer = (function () {
         const addNewTaskCancel = addNewTaskForm.querySelector("#add-new-task-cancel");
         addNewTaskCancel.addEventListener("click", () => {
             addNewTaskDialog.close(addNewTaskCancel.value);
-        })
+        });
 
         return [addNewTaskButton, addNewTaskDialog, addNewTaskForm];
     }
@@ -270,15 +270,182 @@ export const taskDOMRenderer = (function () {
         newTaskNamePlusDiv.appendChild(newTaskDueDate);
         newTaskNamePlusDiv.appendChild(newTaskPriority);
         newTaskNamePlusDiv.appendChild(newTaskTags);
+        newTaskNamePlusDiv.appendChild(buttonsDiv);
 
         newTaskDiv.appendChild(newTaskCheckboxDiv);
         newTaskDiv.appendChild(newTaskNamePlusDiv);
-        newTaskDiv.appendChild(buttonsDiv);
+        // newTaskDiv.appendChild(buttonsDiv);
 
         return newTaskDiv;
 
     };
 
-    return { initAddNewTask, renderNewTask };
+    const initEditTaskForm = function () {
+        const form = document.createElement("form");
+        form.setAttribute("id", "edit-task-form");
+
+         // form fields
+        const fieldsSection = document.createElement("section");
+
+        // name
+        const nameDiv = document.createElement("div");
+
+        const nameInputLabel = document.createElement("label");
+        nameInputLabel.setAttribute("for", "edit-name");
+        nameInputLabel.textContent = "Task";
+
+        const nameInput = document.createElement("input");
+        nameInput.setAttribute("type", "text");
+        nameInput.setAttribute("id", "edit-name");
+        nameInput.setAttribute("name", "name");
+        nameInput.setAttribute("placeholder", "New Task Name...");
+        nameInput.setAttribute("autocomplete", "off");
+        nameInput.classList.add("input-field");
+
+        // notes
+        const notesDiv = document.createElement("div");
+
+        const notesTextAreaLabel = document.createElement("label");
+        notesTextAreaLabel.setAttribute("for", "edit-notes");
+        notesTextAreaLabel.textContent = "Notes";
+
+        const notesTextArea = document.createElement("textarea");
+        notesTextArea.setAttribute("id", "edit-notes");
+        notesTextArea.setAttribute("name", "notes");
+        notesTextArea.setAttribute("placeholder", "Notes...");
+        notesTextArea.classList.add("input-field");
+
+        // due date
+        const dueDateDiv = document.createElement("div");
+
+        const dueDateInputLabel = document.createElement("label");
+        dueDateInputLabel.setAttribute("for", "edit-duedate");
+        dueDateInputLabel.textContent = "Due Date";
+
+        const dueDateInput = document.createElement("input");
+        dueDateInput.setAttribute("type", "datetime-local");
+        dueDateInput.setAttribute("id", "edit-duedate");
+        dueDateInput.setAttribute("name", "dueDate");
+        dueDateInput.classList.add("input-field");
+
+        // priority
+        const priorityDiv = document.createElement("div");
+
+        const prioritySelectLabel = document.createElement("label");
+        prioritySelectLabel.setAttribute("for", "task-priority");
+        prioritySelectLabel.textContent = "Priority";
+
+        const prioritySelect = document.createElement("select");
+        prioritySelect.setAttribute("id", "edit-priority");
+        prioritySelect.setAttribute("name", "priority");
+        prioritySelect.classList.add("input-field");
+        for (let level of ["", "Low", "Medium", "High"]) {
+            const opt = document.createElement("option");
+            opt.value = level;
+            opt.textContent = level;
+            prioritySelect.appendChild(opt);
+        }
+
+        // tags
+        const tagsDiv = document.createElement("div");
+
+        const tagsInputLabel = document.createElement("label");
+        tagsInputLabel.setAttribute("for", "edit-tags");
+        tagsInputLabel.textContent = "Tags";
+
+        const tagsInput = document.createElement("input");
+        tagsInput.setAttribute("type", "text");
+        tagsInput.setAttribute("id", "edit-tags");
+        tagsInput.setAttribute("name", "tags");
+        tagsInput.setAttribute("placeholder", "Add a tag separated by a space or comma...");
+        tagsInput.setAttribute("autocomplete", "off");
+        tagsInput.classList.add("input-field");
+
+        const tagsOutput = document.createElement("output");
+        tagsOutput.setAttribute("name", "tags-list");
+        tagsOutput.setAttribute("for", "edit-tags");
+        
+        const tagsOutputList = document.createElement("ul");
+        tagsInput.addEventListener("keyup", event => {
+            if (["Space", "Comma"].includes(event.code)) {
+                let tag = tagsInput.value.trim();
+                if (event.code === "Comma") {
+                    tag = tag.slice(0,-1);
+                }
+                if (tag !== "") {
+                    const tagLI = document.createElement("li");
+                    tagLI.textContent = tag.replaceAll(" ", "");
+                    tagsOutputList.appendChild(tagLI);
+                }
+                tagsInput.value = "";
+            }
+        });
+
+        // buttons
+        const buttonsSection = document.createElement("section");
+
+        const submitButton = document.createElement("button");
+        submitButton.setAttribute("type", "submit");
+        submitButton.setAttribute("id", "edit-task-submit");
+        submitButton.setAttribute("form", "edit-task-form");
+        submitButton.setAttribute("value", "submit");
+        submitButton.textContent = "Edit Task";
+
+        const cancelButton = document.createElement("button");
+        cancelButton.setAttribute("type", "submit");
+        cancelButton.setAttribute("id", "edit-task-cancel");
+        cancelButton.setAttribute("form", "edit-task-form");
+        cancelButton.setAttribute("value", "cancel");
+        cancelButton.textContent = "Cancel";
+
+        // attach elements to form
+        form.appendChild(fieldsSection);
+        form.appendChild(buttonsSection);
+
+        fieldsSection.appendChild(nameDiv);
+        fieldsSection.appendChild(notesDiv);
+        fieldsSection.appendChild(dueDateDiv);
+        fieldsSection.appendChild(priorityDiv);
+        fieldsSection.appendChild(tagsDiv);
+
+        nameDiv.appendChild(nameInputLabel);
+        nameDiv.appendChild(nameInput);
+
+        notesDiv.appendChild(notesTextAreaLabel);
+        notesDiv.appendChild(notesTextArea);
+
+        dueDateDiv.appendChild(dueDateInputLabel);
+        dueDateDiv.appendChild(dueDateInput);
+
+        priorityDiv.appendChild(prioritySelectLabel);
+        priorityDiv.appendChild(prioritySelect);
+
+        tagsDiv.appendChild(tagsInputLabel);
+        tagsOutput.appendChild(tagsOutputList);
+        tagsDiv.appendChild(tagsOutput);
+        tagsDiv.appendChild(tagsInput);
+
+        buttonsSection.appendChild(submitButton);
+        buttonsSection.appendChild(cancelButton);
+
+        return form;
+    };
+
+    const renderEditedTask = function (taskDivInfoDiv, id, name, notes, dueDate, priority, tags) {
+        console.log(taskDivInfoDiv);
+        taskDivInfoDiv.querySelector(`[id="${id}-name"]`).textContent = name;
+        taskDivInfoDiv.querySelector(`[id="${id}-notes"]`).textContent = notes;
+        taskDivInfoDiv.querySelector(`[id="${id}-duedate"]`).textContent = dueDate;
+        taskDivInfoDiv.querySelector(`[id="${id}-priority"]`).textContent = priority;
+        const taskTags = taskDivInfoDiv.querySelector(`[id="${id}-tags"]`);
+        taskTags.innerHTML = "";
+        for (let tag of tags) {
+            const tagLI = document.createElement("li");
+            tagLI.textContent = tag;
+            taskTags.appendChild(tagLI);
+        }
+    };
+
+    return { initAddNewTask, renderNewTask, initEditTaskForm, renderEditedTask };
 
 })();
