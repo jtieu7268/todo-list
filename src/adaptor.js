@@ -117,12 +117,33 @@ export const adaptor = (function () {
             const editTaskSubmitButton = editTaskForm.querySelector("#edit-task-submit");
             editTaskSubmitButton.addEventListener('click', event => {
                 event.preventDefault();
+                triggerEditTaskFromInputs();
+            });
+
+            document.addEventListener('click', triggerEditTaskFromInputsWithOutsideClick);
+
+            function triggerEditTaskFromInputs () {
                 const parsedInputs = parseFormInputs(inputFields, tagsOutputList);
                 if (parsedInputs.name === "") parsedInputs.name = "New Task";
-                // when submitted, exited, etc., update task in backend and display edits
                 editTaskFromEditTaskFormInputs(taskID, newTaskDivInfoDiv, parsedInputs);
                 editTaskForm.replaceWith(newTaskDivInfoDiv);
-            });
+                document.removeEventListener('click', triggerEditTaskFromInputsWithOutsideClick);
+            }
+
+            function triggerEditTaskFromInputsWithOutsideClick (event) {
+                if (
+                    !newTaskDivInfoDiv.contains(event.target) 
+                    && !newTaskDiv.contains(event.target) 
+                    && !editTaskForm.contains(event.target) 
+                    && !editButton.contains(event.target)
+                    && !deleteButton.contains(event.target)
+                    && !editTaskSubmitButton.contains(event.target)
+                    && !editTaskCancelButton.contains(event.target)
+                ) {
+                    triggerEditTaskFromInputs();
+                    document.removeEventListener('click', triggerEditTaskFromInputsWithOutsideClick);
+                };
+            }
 
             newTaskDivInfoDiv.replaceWith(editTaskForm);
         });
