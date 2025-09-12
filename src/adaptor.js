@@ -77,6 +77,12 @@ export const adaptor = (function () {
             tags
         );
 
+        // checkbox
+        const checkbox = newTaskDiv.querySelector(`[id="${taskID}-checkbox"]`);
+        checkbox.addEventListener('click', () => {
+            taskManager.toggleTaskComplete(taskID);
+        });
+
         // imbue functionalities to delete and edit buttons of task element
         const deleteButton = newTaskDiv.querySelector(".task-delete-button");
         deleteButton.addEventListener("click", () => {
