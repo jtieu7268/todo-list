@@ -5,15 +5,15 @@ export const taskManager = (function () {
         completed: []
     };
 
-    const createTaskObj = function (name = "", notes = "", dueDate = null, priority = null, tags = []) {
+    const createTask = function (name = "", notes = "", dueDate = null, priority = null, tags = []) {
         let id = Date.now().toString();
         let isComplete = false;
         return { id, name, notes, dueDate, isComplete, priority, tags };
     };
 
     // returns task id for creating and interfacing with task-related DOM elements
-    const createTask = function (name = "", notes = "", dueDate = null, priority = null, tags = []) {
-        const task = createTaskObj(name, notes, dueDate, priority, tags);
+    const addTask = function (name = "", notes = "", dueDate = null, priority = null, tags = []) {
+        const task = createTask(name, notes, dueDate, priority, tags);
         masterTaskList.all.push(task);
         return task.id;
     };
@@ -82,5 +82,5 @@ export const taskManager = (function () {
 
     const printTaskList = () => console.log(masterTaskList);
 
-    return { createTask, editTask, deleteTask, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
+    return { addTask, editTask, deleteTask, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
 })();

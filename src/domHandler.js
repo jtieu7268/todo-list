@@ -61,7 +61,7 @@ export const domHandler = (function () {
         const tags = inputs.tags;
 
         // use processed inputs to create task and task element
-        const taskID = taskManager.createTask(
+        const taskID = taskManager.addTask(
             name, 
             notes, 
             dueDate, 
