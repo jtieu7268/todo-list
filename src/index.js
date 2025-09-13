@@ -1,3 +1,3 @@
-import home from "./home.js";
+import { adaptor  } from "./adaptor.js";
 
-home();
+adaptor.init();
