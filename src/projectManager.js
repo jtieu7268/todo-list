@@ -1,15 +1,17 @@
 export const projectManager = (function () {
 
     let projectList = [];
+    addProject("Home", true);
 
-    const createProject = function (name) {
-        let id = Date.now().toString();
+    const createProject = function (name, init = false) {
+        let id = init ? "0" : Date.now().toString();
         let taskList = [];
-        return { id, name, taskList };
+        let completedList = [];
+        return { id, name, taskList, completedList };
     }
 
-    const addProject = function (name) {
-        const project = createProject(name);
+    const addProject = function (name, init = false) {
+        const project = init ? createProject(name, init) : createProject(name);
         projectList.push(project);
         return project.id;
     }
