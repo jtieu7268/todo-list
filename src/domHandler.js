@@ -1,16 +1,16 @@
 import { taskManager as tm  } from "./taskManager.js";
-import { taskDOMRenderer as tmr } from "./taskDOMRenderer.js";
+import { taskDOMHandler as tdh } from "./taskDOMHandler.js";
 
-export const adaptor = (function () {
+export const domHandler = (function () {
     const taskManager = tm;
-    const taskDOMRenderer = tmr;
+    const taskDOMHandler = tdh;
 
     const projDiv = document.querySelector("#proj-container");
     const taskDiv = document.querySelector("#task-container");
     const tasklist = document.createElement("ul");
 
     const init = function () {
-        const [addNewTaskButton, addNewTaskDialog, addNewTaskForm] = taskDOMRenderer.initAddNewTask();
+        const [addNewTaskButton, addNewTaskDialog, addNewTaskForm] = taskDOMHandler.initAddNewTask();
 
         addNewTaskButton.addEventListener("click", () => {
             addNewTaskDialog.returnValue = "";
@@ -68,7 +68,7 @@ export const adaptor = (function () {
             priority, 
             tags
         );
-        const newTaskDiv = taskDOMRenderer.renderNewTask(
+        const newTaskDiv = taskDOMHandler.renderNewTask(
             taskID,
             name, 
             notes, 
@@ -93,7 +93,7 @@ export const adaptor = (function () {
         const editButton = newTaskDiv.querySelector(".task-edit-button");
         editButton.addEventListener("click", () => {
             // open form and populate current task info
-            const editTaskForm = taskDOMRenderer.initEditTaskForm();
+            const editTaskForm = taskDOMHandler.initEditTaskForm();
             const inputFields = retrieveFormInputs(editTaskForm);
             const tagsOutputList = retrieveFormTagsOutputList(editTaskForm);
             for (let inputField of inputFields) {
@@ -173,7 +173,7 @@ export const adaptor = (function () {
             tags
         );
 
-        taskDOMRenderer.renderEditedTaskInfoDiv(
+        taskDOMHandler.renderEditedTaskInfoDiv(
             taskInfoDiv, 
             taskID, 
             name, 

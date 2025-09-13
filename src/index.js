@@ -1,3 +1,3 @@
-import { adaptor  } from "./adaptor.js";
+import { domHandler } from "./domHandler.js";
 
-adaptor.init();
+domHandler.init();

@@ -1,4 +1,4 @@
-export const taskDOMRenderer = (function () {
+export const taskDOMHandler = (function () {
 
     const initAddNewTask = function () {
         const addNewTaskButton = document.createElement("button");
