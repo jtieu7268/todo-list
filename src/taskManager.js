@@ -1,5 +1,3 @@
-import { projectManager } from "./projectManager";
-
 export const taskManager = (function () {
     
     // let masterTaskList = {
@@ -37,6 +35,10 @@ export const taskManager = (function () {
         const taskIndex = getTaskIndex(taskID);
         // masterTaskList.all.splice(taskIndex, 1);
         taskList.splice(taskIndex, 1);
+    }
+
+    const deleteProjectTasks = function (projectID) {
+        taskList = taskList.filter(task => task.projectID !== projectID);
     }
 
     const toggleTaskComplete = function (taskID) {
@@ -95,5 +97,5 @@ export const taskManager = (function () {
 
     const printTaskList = () => console.log(taskList);
 
-    return { addTask, editTask, deleteTask, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
+    return { addTask, editTask, deleteTask, deleteProjectTasks, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
 })();

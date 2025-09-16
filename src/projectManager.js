@@ -1,3 +1,5 @@
+import { taskManager } from "./taskManager.js";
+
 export const projectManager = (function () {
 
     let projectList = [];
@@ -17,6 +19,7 @@ export const projectManager = (function () {
 
     const deleteProject = function (projectID) {
         const projectIndex = getProjectIndex(projectID);
+        taskManager.deleteProjectTasks(projectID);
         projectList.splice(projectIndex, 1);
     }
 
