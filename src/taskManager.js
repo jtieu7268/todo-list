@@ -1,20 +1,26 @@
+import { projectManager } from "./projectManager";
+
 export const taskManager = (function () {
     
-    let masterTaskList = {
-        all: [],
-        completed: []
-    };
+    // let masterTaskList = {
+    //     all: [],
+    //     completed: []
+    // };
+    let taskList = [];
 
-    const createTask = function (name = "", notes = "", dueDate = null, priority = null, tags = []) {
+    const createTask = function (name = "", notes = "", dueDate = null, priority = null, tags = [], projectID = "0") {
         let id = Date.now().toString();
         let isComplete = false;
-        return { id, name, notes, dueDate, isComplete, priority, tags };
+        return { id, name, notes, dueDate, isComplete, priority, tags, projectID };
     };
 
     // returns task id for creating and interfacing with task-related DOM elements
-    const addTask = function (name = "", notes = "", dueDate = null, priority = null, tags = []) {
-        const task = createTask(name, notes, dueDate, priority, tags);
-        masterTaskList.all.push(task);
+    const addTask = function (name = "", notes = "", dueDate = null, priority = null, tags = [], projectID = "0") {
+        const task = createTask(name, notes, dueDate, priority, tags, projectID);
+        // masterTaskList.all.push(task);
+        taskList.push(task);
+        // projectManager.getProjectTaskList(projectID).push(task);
+        // console.log(projectManager.getProjectTaskList(projectID));
         return task.id;
     };
 
@@ -29,14 +35,15 @@ export const taskManager = (function () {
 
     const deleteTask = function (taskID) {
         const taskIndex = getTaskIndex(taskID);
-        masterTaskList.all.splice(taskIndex, 1);
+        // masterTaskList.all.splice(taskIndex, 1);
+        taskList.splice(taskIndex, 1);
     }
 
     const toggleTaskComplete = function (taskID) {
         const task = getTask(taskID);
         task.isComplete = !task.isComplete;
-        if (task.isComplete) masterTaskList.completed.push(task);
-        else removeTaskFromCompleted(taskID);
+        // if (task.isComplete) masterTaskList.completed.push(task);
+        // else removeTaskFromCompleted(taskID);
     }
 
     const getTaskName = id => { return getTask(id).name }
@@ -74,13 +81,19 @@ export const taskManager = (function () {
     }
     */
 
-    const getTask = id => { return masterTaskList.all.find(task => task.id === id) }
+    const getTask = id => { 
+        // return masterTaskList.all.find(task => task.id === id) 
+        return taskList.find(task => task.id === id);
+    }
 
-    const getTaskIndex = id => { return masterTaskList.all.findIndex(task => task.id === id) }
+    const getTaskIndex = id => { 
+        // return masterTaskList.all.findIndex(task => task.id === id) 
+        return taskList.findIndex(task => task.id === id);
+    }
 
-    const removeTaskFromCompleted = id => masterTaskList.completed = masterTaskList.completed.filter(task => {return task.id !== id});
+    // const removeTaskFromCompleted = id => masterTaskList.completed = masterTaskList.completed.filter(task => {return task.id !== id});
 
-    const printTaskList = () => console.log(masterTaskList);
+    const printTaskList = () => console.log(taskList);
 
     return { addTask, editTask, deleteTask, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
 })();
