@@ -1,9 +1,5 @@
 export const taskManager = (function () {
     
-    // let masterTaskList = {
-    //     all: [],
-    //     completed: []
-    // };
     let taskList = [];
 
     const createTask = function (name = "", notes = "", dueDate = null, priority = null, tags = [], projectID = "0") {
@@ -15,10 +11,7 @@ export const taskManager = (function () {
     // returns task id for creating and interfacing with task-related DOM elements
     const addTask = function (name = "", notes = "", dueDate = null, priority = null, tags = [], projectID = "0") {
         const task = createTask(name, notes, dueDate, priority, tags, projectID);
-        // masterTaskList.all.push(task);
         taskList.push(task);
-        // projectManager.getProjectTaskList(projectID).push(task);
-        // console.log(projectManager.getProjectTaskList(projectID));
         return task.id;
     };
 
@@ -33,7 +26,6 @@ export const taskManager = (function () {
 
     const deleteTask = function (taskID) {
         const taskIndex = getTaskIndex(taskID);
-        // masterTaskList.all.splice(taskIndex, 1);
         taskList.splice(taskIndex, 1);
     }
 
@@ -44,8 +36,6 @@ export const taskManager = (function () {
     const toggleTaskComplete = function (taskID) {
         const task = getTask(taskID);
         task.isComplete = !task.isComplete;
-        // if (task.isComplete) masterTaskList.completed.push(task);
-        // else removeTaskFromCompleted(taskID);
     }
 
     const getTaskName = id => { return getTask(id).name }
@@ -58,44 +48,23 @@ export const taskManager = (function () {
 
     const getTaskTags = id => { return getTask(id).tags }
 
-    /* 
-    const updateTask = function (taskID, fieldName, newData) {
-        const task = getTask(taskID);
-        if (fieldName === "isComplete") {
-            if (newData === true) {
-                masterTaskList.completed.push(task);
-            } else {
-                 removeTaskFromCompleted(taskID);
-            }
-        }
+    const getTask = id => { return taskList.find(task => task.id === id) }
 
-        task[fieldName] = newData;
-    };
-
-    const updateTaskTags = function (taskID, newTag) {
-        const task = getTask(taskID);
-        const trimmedTag = newTag.trim();
-        if (trimmedTag !== "" && !task.tags.find(tag => tag === trimmedTag)) {
-            task.tags.push(trimmedTag);
-            return trimmedTag;
-        }
-        return "";
-    }
-    */
-
-    const getTask = id => { 
-        // return masterTaskList.all.find(task => task.id === id) 
-        return taskList.find(task => task.id === id);
-    }
-
-    const getTaskIndex = id => { 
-        // return masterTaskList.all.findIndex(task => task.id === id) 
-        return taskList.findIndex(task => task.id === id);
-    }
-
-    // const removeTaskFromCompleted = id => masterTaskList.completed = masterTaskList.completed.filter(task => {return task.id !== id});
+    const getTaskIndex = id => { return taskList.findIndex(task => task.id === id) }
 
     const printTaskList = () => console.log(taskList);
 
-    return { addTask, editTask, deleteTask, deleteProjectTasks, toggleTaskComplete, printTaskList, getTaskName, getTaskNotes, getTaskDueDate, getTaskPriority, getTaskTags };
+    return { 
+        addTask, 
+        editTask, 
+        deleteTask, 
+        deleteProjectTasks, 
+        toggleTaskComplete, 
+        printTaskList, 
+        getTaskName, 
+        getTaskNotes, 
+        getTaskDueDate, 
+        getTaskPriority, 
+        getTaskTags 
+    };
 })();

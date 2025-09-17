@@ -6,8 +6,6 @@ export const projectManager = (function () {
 
     const createProject = function (name, init = false) {
         let id = init ? "0" : Date.now().toString();
-        // let taskList = [];
-        // let completedList = [];
         return { id, name };
     }
 
@@ -29,6 +27,11 @@ export const projectManager = (function () {
 
     addProject("Home", true);
 
-    return { createProject, addProject, deleteProject, getProjectTaskList }
+    return { 
+        createProject, 
+        addProject, 
+        deleteProject, 
+        getProjectTaskList 
+    }
 
 })();
