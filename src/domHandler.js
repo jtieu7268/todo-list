@@ -10,44 +10,109 @@ export const domHandler = (function () {
     const tasklist = document.createElement("ul");
 
     const init = function () {
-        const [addNewTaskButton, addNewTaskDialog, addNewTaskForm] = taskDOMHandler.initAddNewTask();
+        const [addNewTaskButton, addNewTaskForm] = taskDOMHandler.initAddNewTask();
 
         addNewTaskButton.addEventListener("click", () => {
-            addNewTaskDialog.returnValue = "";
-            tasklist.appendChild(addNewTaskDialog);
-            addNewTaskDialog.show();
-        });
-        
-        addNewTaskDialog.addEventListener("close", (event) => {
-            if (addNewTaskDialog.returnValue !== "cancel") {
+            const tempTaskDiv = taskDOMHandler.renderTempTask();
+            const tempTaskBodyDiv = tempTaskDiv.querySelector(".temp-body");
+
+            const addNewTaskCancel = addNewTaskForm.querySelector("#add-new-task-cancel");
+            addNewTaskCancel.addEventListener("click", cancelNewTask);
+            function cancelNewTask () { 
+                tempTaskDiv.remove();
+                addNewTaskCancel.removeEventListener("click", cancelNewTask);
+            };
+
+            const addNewTaskSubmit = addNewTaskForm.querySelector("#add-new-task-submit");
+            addNewTaskSubmit.addEventListener("click", submitNewTask);
+            function submitNewTask (event) {
+                event.preventDefault();
+
                 const inputFields = retrieveFormInputs(addNewTaskForm);
                 const tagsOutputList = retrieveFormTagsOutputList(addNewTaskForm);
                 const parsedInputs = parseFormInputs(inputFields, tagsOutputList);
+
+                tempTaskDiv.remove();
+
                 /* special cases for empty task name
                  * if the submit button is clicked and the task name is empty or
                  * if the new task form is lightly dismissed and the task name is empty but another field is filled out, 
                  * fill in task name with a default task name so a task is still created
                  */
                 if (
-                    (addNewTaskDialog.returnValue === "submit" && parsedInputs.name === "")
-                    || (addNewTaskDialog.returnValue === "" && parsedInputs.name === "" && (
+                    (addNewTaskSubmit.contains(event.target) && parsedInputs.name === "")
+                    || (parsedInputs.name === "" && (
                             parsedInputs.notes !== "" 
                             || parsedInputs.dueDate !== "" 
                             || parsedInputs.priority !== "" 
                             || parsedInputs.tags.length !== 0))
                 ) parsedInputs.name = "New Task";
+                if (parsedInputs.name !== "") createTaskFromAddNewTaskFormInputs(parsedInputs);
 
-                // if task name is not empty, make new task
-                if (parsedInputs.name !== "") {
-                    createTaskFromAddNewTaskFormInputs(parsedInputs);
-                    for (let inputField of inputFields) inputField.value = "";
-                }
-                
-                // otherwise, don't make new task and continue to default action 
+                for (let inputField of inputFields) inputField.value = "";
                 tagsOutputList.innerHTML = "";
-            }
-            tasklist.removeChild(addNewTaskDialog);
-        })
+
+                addNewTaskSubmit.removeEventListener("click", submitNewTask);
+                // document.removeEventListener('click', triggerCreateTaskWithOutsideClick);
+            };
+
+            // document.addEventListener('click', triggerCreateTaskWithOutsideClick);
+            addNewTaskForm.addEventListener("blur", triggerCreateTaskWithOutsideClick, true);
+            function triggerCreateTaskWithOutsideClick (event) {
+                console.log(event.target);
+                console.log(tempTaskDiv.contains(event.target) 
+                    && !addNewTaskForm.contains(event.target) 
+                    && !addNewTaskSubmit.contains(event.target)
+                    && !addNewTaskCancel.contains(event.target));
+                // if (
+                //     !tempTaskDiv.contains(event.target) 
+                //     && !addNewTaskForm.contains(event.target) 
+                //     && !addNewTaskSubmit.contains(event.target)
+                //     && !addNewTaskCancel.contains(event.target)
+                // ) {
+                //     submitNewTask(event);
+                //     // document.removeEventListener('click', triggerCreateTaskWithOutsideClick);
+                // };
+                if(!addNewTaskForm.contains(event.relatedTarget)) submitNewTask(event);
+            };
+
+            tempTaskBodyDiv.replaceWith(addNewTaskForm);
+            tasklist.appendChild(tempTaskDiv);
+            console.log("temp replaced");
+            addNewTaskForm.focus();
+
+        });
+
+        // addNewTaskDialog.addEventListener("close", (event) => {
+        //     if (addNewTaskDialog.returnValue !== "cancel") {
+        //         const inputFields = retrieveFormInputs(addNewTaskForm);
+        //         const tagsOutputList = retrieveFormTagsOutputList(addNewTaskForm);
+        //         const parsedInputs = parseFormInputs(inputFields, tagsOutputList);
+        //         /* special cases for empty task name
+        //          * if the submit button is clicked and the task name is empty or
+        //          * if the new task form is lightly dismissed and the task name is empty but another field is filled out, 
+        //          * fill in task name with a default task name so a task is still created
+        //          */
+        //         if (
+        //             (addNewTaskDialog.returnValue === "submit" && parsedInputs.name === "")
+        //             || (addNewTaskDialog.returnValue === "" && parsedInputs.name === "" && (
+        //                     parsedInputs.notes !== "" 
+        //                     || parsedInputs.dueDate !== "" 
+        //                     || parsedInputs.priority !== "" 
+        //                     || parsedInputs.tags.length !== 0))
+        //         ) parsedInputs.name = "New Task";
+
+        //         // if task name is not empty, make new task
+        //         if (parsedInputs.name !== "") {
+        //             createTaskFromAddNewTaskFormInputs(parsedInputs);
+        //             for (let inputField of inputFields) inputField.value = "";
+        //         }
+                
+        //         // otherwise, don't make new task and continue to default action 
+        //         tagsOutputList.innerHTML = "";
+        //     }
+        //     tasklist.removeChild(addNewTaskDialog);
+        // });
 
         taskDiv.appendChild(addNewTaskButton);
         taskDiv.appendChild(tasklist);
@@ -155,6 +220,7 @@ export const domHandler = (function () {
         });
 
         tasklist.appendChild(newTaskDiv);
+        console.log("i got added");
     };
 
     const editTaskFromEditTaskFormInputs = function (taskID, taskInfoDiv, inputs) {

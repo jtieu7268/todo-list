@@ -2,22 +2,11 @@ export const taskDOMHandler = (function () {
 
     const initAddNewTask = function () {
         const addNewTaskButton = document.createElement("button");
-        const addNewTaskDialog = document.createElement("dialog");
         const addNewTaskForm = initAddNewTaskForm();
-
-        addNewTaskDialog.setAttribute("closedby", "any")
-        addNewTaskDialog.appendChild(addNewTaskForm);
-        
-        addNewTaskForm.setAttribute("method", "dialog");
 
         addNewTaskButton.textContent = "+";
 
-        const addNewTaskCancel = addNewTaskForm.querySelector("#add-new-task-cancel");
-        addNewTaskCancel.addEventListener("click", () => {
-            addNewTaskDialog.close(addNewTaskCancel.value);
-        });
-
-        return [addNewTaskButton, addNewTaskDialog, addNewTaskForm];
+        return [addNewTaskButton, addNewTaskForm];
     }
 
     /* html for add new task form
@@ -63,6 +52,7 @@ export const taskDOMHandler = (function () {
     const initAddNewTaskForm = function () {
         const form = document.createElement("form");
         form.setAttribute("id", "add-new-task-form");
+        form.setAttribute("tabindex", "1");
 
         // form fields
         const fieldsSection = document.createElement("section");
@@ -445,6 +435,27 @@ export const taskDOMHandler = (function () {
         }
     };
 
-    return { initAddNewTask, renderNewTask, initEditTaskForm, renderEditedTaskInfoDiv };
+    const renderTempTask = function () {
+        const tempTaskDiv = document.createElement("div");
+
+        const tempTaskCheckboxDiv = document.createElement("div");
+        tempTaskCheckboxDiv.classList.add("temp-checkbox");
+
+        const tempTaskCheckbox = document.createElement("input");
+        tempTaskCheckbox.setAttribute("type", "checkbox");
+        tempTaskCheckbox.setAttribute("id", "temp-checkbox");
+
+        const tempTaskBodyDiv = document.createElement("div");
+        tempTaskBodyDiv.classList.add("temp-body");
+
+        tempTaskCheckboxDiv.appendChild(tempTaskCheckbox);
+
+        tempTaskDiv.appendChild(tempTaskCheckboxDiv);
+        tempTaskDiv.appendChild(tempTaskBodyDiv);
+
+        return tempTaskDiv;
+    }
+
+    return { initAddNewTask, renderNewTask, renderTempTask, initEditTaskForm, renderEditedTaskInfoDiv };
 
 })();
